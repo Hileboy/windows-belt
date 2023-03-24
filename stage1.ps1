@@ -54,3 +54,30 @@ function SSH-Setup {
     $acl.SetAccessRule($accessRule)
     Set-Acl $Path $acl
 }
+
+function Setup-WingoEDR {
+    New-Item -ItemType Directory -Path "C:\Program Files\wingoEDR" -Force
+
+    $url = "https://github.com/Hunter-Pittman/wingoEDR/releases/download/v0.1.3-alpha/wingoEDR.exe"
+
+    $file = "C:\Program Files\wingoEDR\wingoEDR.exe"
+
+    $webclient = New-Object System.Net.WebClient
+    $webclient.DownloadFile($url, $file)
+
+    #Expand-Archive -Path $file2 -DestinationPath "C:\Program Files\wingoEDR" -Force
+    
+}
+
+function Setup-Service {
+    New-Service -Name "wingoEDR" -BinaryPathName "C:\Program Files\wingoEDR\wingoEDR.exe" -StartupType Automatic
+    $process = Start-Process -FilePath "C:\Program Files\wingoEDR\wingoEDR.exe" -NoNewWindow
+    Start-Sleep -Seconds 10
+    if(!$process.HasExited){
+        Stop-Process -Name wingoEDR
+    }
+    Start-Service -Name "wingoEDR"
+}
+
+#Setup-WingoEDR
+Setup-Service

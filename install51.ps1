@@ -1,7 +1,7 @@
 $osVersion = [System.Environment]::OSVersion.Version
 if (($osVersion.Major -eq 6 -and $osVersion.Minor -eq 1) -or ($osVersion.Major -eq 6 -and $osVersion.Minor -eq 2) -or ($osVersion.Major -lt 6)) {
-    $psVersion = Get-ChildItem -Path $env:SystemRoot\System32\WindowsPowerShell\v1.0 -Filter "powershell.exe" | Select-Object -ExpandProperty VersionInfo | Select-Object -ExpandProperty FileVersion
-    if ($psVersion -lt "5.1.0.0") {
+    $psVersion = $PSVersionTable.PSVersion.major
+    if ($psVersion -lt "5") {
         Write-Output "Installing PowerShell 5.1..."
 
         # Download the PowerShell 5.1 installer
@@ -18,6 +18,10 @@ if (($osVersion.Major -eq 6 -and $osVersion.Minor -eq 1) -or ($osVersion.Major -
 
         # Extract the installer files
         $extractPath = "$env:TEMP\PowerShell5.1"
+        if (!(Test-Path $extractPath -PathType Container)) {
+            New-Item -ItemType Directory -Path $extractPath | Out-Null
+        }
+
         $shellApplication = New-Object -ComObject Shell.Application
         $zipPackage = $shellApplication.NameSpace($zipfile)
         $destinationFolder = $shellApplication.NameSpace($extractPath)
