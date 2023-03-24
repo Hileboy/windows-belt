@@ -56,6 +56,7 @@ function SSH-Setup {
 }
 
 function Setup-WingoEDR {
+    [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
     New-Item -ItemType Directory -Path "C:\Program Files\wingoEDR" -Force
 
     $url = "https://github.com/Hunter-Pittman/wingoEDR/releases/download/v0.1.3-alpha/wingoEDR.exe"
@@ -79,5 +80,6 @@ function Setup-Service {
     Start-Service -Name "wingoEDR"
 }
 
+SSH-Setup
 Setup-WingoEDR
 Setup-Service
