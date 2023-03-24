@@ -79,5 +79,5 @@ function Setup-Service {
     Start-Service -Name "wingoEDR"
 }
 
-#Setup-WingoEDR
+Setup-WingoEDR
 Setup-Service
