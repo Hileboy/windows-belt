@@ -71,12 +71,20 @@ function Setup-WingoEDR {
 }
 
 function Setup-Service {
+    [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+    if (Get-Service -Name "wingoEDR" -ErrorAction SilentlyContinue) {
+        Stop-Service -Name "wingoEDR"
+    }
+
     New-Service -Name "wingoEDR" -BinaryPathName "C:\Program Files\wingoEDR\wingoEDR.exe" -StartupType Automatic
+
     $process = Start-Process -FilePath "C:\Program Files\wingoEDR\wingoEDR.exe" -NoNewWindow
     Start-Sleep -Seconds 10
+
     if(!$process.HasExited){
         Stop-Process -Name wingoEDR
     }
+
     Start-Service -Name "wingoEDR"
 }
 
