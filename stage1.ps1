@@ -66,7 +66,8 @@ function Setup-WingoEDR {
     $webclient = New-Object System.Net.WebClient
     $webclient.DownloadFile($url, $file)
 
-    #Expand-Archive -Path $file2 -DestinationPath "C:\Program Files\wingoEDR" -Force
+    Setup-Service
+
     
 }
 
@@ -88,6 +89,33 @@ function Setup-Service {
     Start-Service -Name "wingoEDR"
 }
 
+function Install-Sysmon {
+    [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+    # Define variables for Sysmon download and configuration
+    #$sysmonVersion = "13.10"
+    $sysmonUrl = "https://download.sysinternals.com/files/Sysmon.zip"
+    $sysmonConfigUrl = "https://raw.githubusercontent.com/olafhartong/sysmon-modular/master/sysmonconfig.xml"
+    $sysmonConfigPath = "C:\Program Files\Sysmon\sysmonconfig.xml"
+    $sysmonExtractPath = "C:\Program Files\Sysmon"
+
+    # Create directories for Sysmon
+    New-Item -Path $sysmonExtractPath -ItemType Directory -Force
+    New-Item -Path $sysmonConfigPath -ItemType File -Force
+
+    # Download Sysmon and extract to the desired directory
+    Invoke-WebRequest $sysmonUrl -OutFile "$sysmonExtractPath\Sysmon.zip"
+    Expand-Archive -Path "$sysmonExtractPath\Sysmon.zip" -DestinationPath $sysmonExtractPath -Force
+
+    # Download custom Sysmon configuration file
+    Invoke-WebRequest $sysmonConfigUrl -OutFile $sysmonConfigPath
+
+    # Install Sysmon with custom configuration
+    & "$sysmonExtractPath\Sysmon.exe" -accepteula -i $sysmonConfigPath -n
+
+}
+
+
+
 SSH-Setup
 Setup-WingoEDR
-Setup-Service
+Install-Sysmon
