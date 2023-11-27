@@ -135,3 +135,4 @@ function SSH-Fix {
 }
 
 SSH-Fix
+Restart-Service sshd
